@@ -37,14 +37,10 @@ namespace Auth0Glue.Test
         {
             RestClient client = new RestClient(TestHarnessServer.Host);
             await client.PostAsync("/post-path");
-            Assert.AreEqual(
-                new TestHarnessRequest()
-                {
-                    Method = "POST",
-                    EndPoint = "/post-path"
-                },
-                await clientRequest
-            );
+            TestHarnessRequest request = await clientRequest;
+
+            Assert.AreEqual("POST", request.Method, "method");
+            Assert.AreEqual("/post-path", request.EndPoint, "endpoint");
         }
 
         internal static void log(string message)
@@ -98,15 +94,18 @@ namespace Auth0Glue.Test
 
     internal class TestHarnessRequest
     {
-        public string EndPoint { get; set; }
         public string Method { get; set; }
+        public string EndPoint { get; set; }
 
         public override bool Equals(object obj)
         {
             if (obj == null || GetType() != obj.GetType()) return false;
             TestHarnessRequest that = (TestHarnessRequest)obj;
 
-            return this.EndPoint == that.EndPoint && this.Method == that.Method;
+            return
+                this.Method == that.Method
+                && this.EndPoint == that.EndPoint
+            ;
         }
 
         public override int GetHashCode()
