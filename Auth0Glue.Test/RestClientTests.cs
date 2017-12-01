@@ -25,24 +25,24 @@ namespace Auth0Glue.Test
             server.Stop();
         }
 
+        [TestInitialize]
+        public void BeforeEach()
+        {
+            server.EnableRequest();
+        }
+
         [TestMethod]
         public async Task ShouldCallEndpointUsingPostMethod()
         {
             RestClient client = new RestClient(TestHarnessServer.Host);
-            Task serverRequest = server.WaitForRequestAsync();
-            log("Waiting to post");
             await client.PostAsync("/post-path");
-            log("Post complete");
-            log("Waiting for server");
-            await serverRequest;
-            log("Server complete");
             Assert.AreEqual(
                 new TestHarnessRequest()
                 {
                     Method = "GET",
                     EndPoint = "/post-path"
-                }, 
-                server.LastRequest
+                },
+                await server.GetLastRequestAsync()
             );
         }
 
@@ -57,42 +57,34 @@ namespace Auth0Glue.Test
         internal const string Host = "http://localhost:8080";
 
         private HttpListener listener = new HttpListener();
-        private TestHarnessRequest lastRequest;
-        private IAsyncResult lastAsyncGet;
-
-        //public TestHarnessRequest LastRequest {
-        //    get
-        //    {
-        //        log("Starting LastRequest; waiting");
-        //        lastAsyncGet.AsyncWaitHandle.WaitOne();
-        //        log("WaitOne() done");
-        //        return lastRequest;
-        //    }
-        //}
-
-        public TestHarnessRequest LastRequest
-        {
-            get
-            {
-                log("GETTING LastRequest");
-                return lastRequest;
-            }
-        }
+        private Task<TestHarnessRequest> requestTask;
 
         internal void Start()
         {
             listener.Start();
             listener.Prefixes.Add($"{Host}/");
-            //IAsyncResult result = listener.BeginGetContext(new AsyncCallback(ListenerCallback), this);
-            //lastAsyncGet = result;
         }
 
-        internal async Task WaitForRequestAsync()
+        internal void Stop()
+        {
+            listener.Stop();
+        }
+
+        internal void EnableRequest()
+        {
+            requestTask = WaitForRequestAsync();
+        }
+
+        public Task<TestHarnessRequest> GetLastRequestAsync()
+        {
+            return requestTask;
+        }
+
+        internal async Task<TestHarnessRequest> WaitForRequestAsync()
         {
             HttpListenerContext context = await listener.GetContextAsync();
             HttpListenerRequest request = context.Request;
 
-            log("WaitForRequestAsync generating output");
             HttpListenerResponse response = context.Response;
             string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
@@ -101,50 +93,16 @@ namespace Auth0Glue.Test
             output.Write(buffer, 0, buffer.Length);
             output.Close();
 
-            log("WaitForRequestAsync setting lastRequest");
-            lastRequest = new TestHarnessRequest()
+            return new TestHarnessRequest()
             {
                 Method = request.HttpMethod,
                 EndPoint = request.RawUrl
             };
-
-            log("SET COMPLETED for LastRequest");
-        }
-
-        public static void ListenerCallback(IAsyncResult result)
-        {
-            log("Starting ListenerCallback");
-            TestHarnessServer server = (TestHarnessServer)result.AsyncState;
-            HttpListenerContext context = server.listener.EndGetContext(result);
-            HttpListenerRequest request = context.Request;
-
-            log("ListenerCallback generating output");
-            HttpListenerResponse response = context.Response;
-            string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
-            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-            response.ContentLength64 = buffer.Length;
-            Stream output = response.OutputStream;
-            output.Write(buffer, 0, buffer.Length);
-            output.Close();
-
-            log("ListenerCallback setting lastRequest");
-            server.lastRequest = new TestHarnessRequest()
-            {
-                Method = request.HttpMethod,
-                EndPoint = request.RawUrl
-            };
-
-            log("SET COMPLETED for LastRequest");
         }
 
         internal static void log(string message)
         {
             Console.WriteLine($"{DateTime.Now.ToFileTime()}: {message}");
-        }
-        
-        internal void Stop()
-        {
-            listener.Stop();
         }
     }
 
