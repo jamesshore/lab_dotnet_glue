@@ -38,11 +38,22 @@ namespace Auth0Glue.Test
         [TestMethod]
         public async Task CallsEndpointUsingPostMethod()
         {
-            await newClient().PostAsync("/post-path");
+            var endpoint = "/post-path";
+            await newClient().PostAsync(endpoint);
 
             var request = await clientRequest;
             Assert.AreEqual("POST", request.Method, "method");
-            Assert.AreEqual("/post-path", request.EndPoint, "endpoint");
+            Assert.AreEqual(endpoint, request.EndPoint, "endpoint");
+        }
+
+        [TestMethod]
+        public async Task ProvidesServerResponse()
+        {
+            var expectedStatus = HttpStatusCode.UpgradeRequired;
+            server.ConfigureResponse(status: expectedStatus);
+            
+            var response = await newClient().PostAsync(IrrelevantEndpoint);
+            Assert.AreEqual(expectedStatus, response.Status, "status");
         }
 
         [TestMethod]
@@ -76,9 +87,11 @@ namespace Auth0Glue.Test
     internal class TestHarnessServer
     {
         internal const string Host = "http://localhost:8080";
+        internal const HttpStatusCode IrrelevantStatus = HttpStatusCode.NotImplemented;
 
         private HttpListener listener = new HttpListener();
-
+        private HttpStatusCode status;
+        
         internal void Start()
         {
             listener.Start();
@@ -90,14 +103,21 @@ namespace Auth0Glue.Test
             listener.Stop();
         }
 
+        internal void ConfigureResponse(HttpStatusCode status = IrrelevantStatus)
+        {
+            this.status = status;
+        }
+
         internal async Task<TestHarnessRequest> WaitForRequestAsync()
         {
+            ConfigureResponse();
             var context = await listener.GetContextAsync();
             var request = context.Request;
 
             var body = new StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd();
 
             HttpListenerResponse response = context.Response;
+            response.StatusCode = (int)status;
             string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
             response.ContentLength64 = buffer.Length;
