@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -48,7 +49,7 @@ namespace Auth0Glue.Test
         [TestMethod]
         public async Task CanPostJsonRequestParameters()
         {
-            var parameters = new Dictionary<string, object>()
+            var parameters = new Dictionary<string, string>()
             {
                 ["parm1"] = "one",
                 ["parm2"] = "two"
@@ -56,7 +57,8 @@ namespace Auth0Glue.Test
             await newClient().PostAsync(IrrelevantEndpoint, parameters);
 
             TestHarnessRequest request = await clientRequest;
-            Assert.AreEqual("{\"parm1\":\"one\",\"parm2\":\"two\"}", request.Body);
+            Assert.AreEqual("{\"parm1\":\"one\",\"parm2\":\"two\"}", request.Body, "body");
+            Assert.AreEqual("application/json; charset=utf-8", request.Headers["content-type"], "content-type header");
         }
 
         private RestClient newClient()
@@ -110,6 +112,7 @@ namespace Auth0Glue.Test
             {
                 Method = request.HttpMethod,
                 EndPoint = request.RawUrl,
+                Headers = request.Headers,
                 Body = body
             };
         }
@@ -124,6 +127,7 @@ namespace Auth0Glue.Test
     {
         public string Method { get; set; }
         public string EndPoint { get; set; }
+        public NameValueCollection Headers { get; set; }
         public string Body { get; set; }
 
         //public override bool Equals(object obj)

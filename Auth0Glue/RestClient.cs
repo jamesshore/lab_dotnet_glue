@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Auth0Glue
@@ -18,10 +19,11 @@ namespace Auth0Glue
             this.host = host;
         }
 
-        public async Task PostAsync(string endpoint, Dictionary<string, object> parameters = null)
+        public async Task PostAsync(string endpoint, Dictionary<string, string> parameters = null)
         {
             var json = JsonConvert.SerializeObject(parameters);
-            HttpResponseMessage response = await client.PostAsync($"{host}{endpoint}", new StringContent(json));
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+            HttpResponseMessage response = await client.PostAsync($"{host}{endpoint}", content);
         }
     }
 }
