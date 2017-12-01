@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="RestClientTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Auth0ClientTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
