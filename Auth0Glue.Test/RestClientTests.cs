@@ -38,10 +38,9 @@ namespace Auth0Glue.Test
         [TestMethod]
         public async Task CallsEndpointUsingPostMethod()
         {
-            RestClient client = new RestClient(TestHarnessServer.Host);
-            await client.PostAsync("/post-path");
+            await newClient().PostAsync("/post-path");
 
-            TestHarnessRequest request = await clientRequest;
+            var request = await clientRequest;
             Assert.AreEqual("POST", request.Method, "method");
             Assert.AreEqual("/post-path", request.EndPoint, "endpoint");
         }
@@ -50,12 +49,11 @@ namespace Auth0Glue.Test
         public async Task ProvidesEmptyBodyWhenThereAreNoParameters()
         {
             await newClient().PostAsync(IrrelevantEndpoint);
-            var request = await clientRequest;
-            Assert.AreEqual("", request.Body);
+            Assert.AreEqual("", (await clientRequest).Body);
         }
 
         [TestMethod]
-        public async Task CanPostJsonRequestParameters()
+        public async Task ConvertsParametersToJsonObject()
         {
             var parameters = new Dictionary<string, string>()
             {
@@ -72,11 +70,6 @@ namespace Auth0Glue.Test
         private RestClient newClient()
         {
             return new RestClient(TestHarnessServer.Host);
-        }
-
-        internal static void log(string message)
-        {
-            TestHarnessServer.log(message);
         }
     }
 
@@ -99,14 +92,10 @@ namespace Auth0Glue.Test
 
         internal async Task<TestHarnessRequest> WaitForRequestAsync()
         {
-            HttpListenerContext context = await listener.GetContextAsync();
-            HttpListenerRequest request = context.Request;
+            var context = await listener.GetContextAsync();
+            var request = context.Request;
 
-            //string body = null;
-            //if (request.InputStream != null)
-            //{
             var body = new StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd();
-            //}
 
             HttpListenerResponse response = context.Response;
             string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
@@ -124,11 +113,6 @@ namespace Auth0Glue.Test
                 Body = body
             };
         }
-
-        internal static void log(string message)
-        {
-            Console.WriteLine($"{DateTime.Now.ToFileTime()}: {message}");
-        }
     }
 
     internal class TestHarnessRequest
@@ -137,26 +121,5 @@ namespace Auth0Glue.Test
         public string EndPoint { get; set; }
         public NameValueCollection Headers { get; set; }
         public string Body { get; set; }
-
-        //public override bool Equals(object obj)
-        //{
-        //    if (obj == null || GetType() != obj.GetType()) return false;
-        //    TestHarnessRequest that = (TestHarnessRequest)obj;
-
-        //    return
-        //        this.Method == that.Method
-        //        && this.EndPoint == that.EndPoint
-        //    ;
-        //}
-
-        //public override int GetHashCode()
-        //{
-        //    throw new NotImplementedException();
-        //}
-
-        //public override string ToString()
-        //{
-        //    return $"TestHarnessRequest: Method '{Method}', EndPoint '{EndPoint}'";
-        //}
     }
 }
