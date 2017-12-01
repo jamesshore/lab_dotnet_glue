@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -10,6 +11,7 @@ namespace Auth0Glue.Test
     [TestClass]
     public class RestClientTests
     {
+        private const string IrrelevantEndpoint = "/irrelevant_endpoint";
         private static TestHarnessServer server;
         private Task<TestHarnessRequest> clientRequest;
 
@@ -37,10 +39,29 @@ namespace Auth0Glue.Test
         {
             RestClient client = new RestClient(TestHarnessServer.Host);
             await client.PostAsync("/post-path");
-            TestHarnessRequest request = await clientRequest;
 
+            TestHarnessRequest request = await clientRequest;
             Assert.AreEqual("POST", request.Method, "method");
             Assert.AreEqual("/post-path", request.EndPoint, "endpoint");
+        }
+
+        [TestMethod]
+        public async Task CanPostJsonRequestParameters()
+        {
+            var parameters = new Dictionary<string, object>()
+            {
+                ["parm1"] = "one",
+                ["parm2"] = "two"
+            };
+            await newClient().PostAsync(IrrelevantEndpoint, parameters);
+
+            TestHarnessRequest request = await clientRequest;
+            Assert.AreEqual("{\"parm1\":\"one\",\"parm2\":\"two\"}", request.Body);
+        }
+
+        private RestClient newClient()
+        {
+            return new RestClient(TestHarnessServer.Host);
         }
 
         internal static void log(string message)
@@ -71,6 +92,12 @@ namespace Auth0Glue.Test
             HttpListenerContext context = await listener.GetContextAsync();
             HttpListenerRequest request = context.Request;
 
+            string body = null;
+            if (request.InputStream != null)
+            {
+                body = new StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd();
+            }
+
             HttpListenerResponse response = context.Response;
             string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
             byte[] buffer = Encoding.UTF8.GetBytes(responseString);
@@ -82,7 +109,8 @@ namespace Auth0Glue.Test
             return new TestHarnessRequest()
             {
                 Method = request.HttpMethod,
-                EndPoint = request.RawUrl
+                EndPoint = request.RawUrl,
+                Body = body
             };
         }
 
@@ -96,26 +124,27 @@ namespace Auth0Glue.Test
     {
         public string Method { get; set; }
         public string EndPoint { get; set; }
+        public string Body { get; set; }
 
-        public override bool Equals(object obj)
-        {
-            if (obj == null || GetType() != obj.GetType()) return false;
-            TestHarnessRequest that = (TestHarnessRequest)obj;
+        //public override bool Equals(object obj)
+        //{
+        //    if (obj == null || GetType() != obj.GetType()) return false;
+        //    TestHarnessRequest that = (TestHarnessRequest)obj;
 
-            return
-                this.Method == that.Method
-                && this.EndPoint == that.EndPoint
-            ;
-        }
+        //    return
+        //        this.Method == that.Method
+        //        && this.EndPoint == that.EndPoint
+        //    ;
+        //}
 
-        public override int GetHashCode()
-        {
-            throw new NotImplementedException();
-        }
+        //public override int GetHashCode()
+        //{
+        //    throw new NotImplementedException();
+        //}
 
-        public override string ToString()
-        {
-            return $"TestHarnessRequest: Method '{Method}', EndPoint '{EndPoint}'";
-        }
+        //public override string ToString()
+        //{
+        //    return $"TestHarnessRequest: Method '{Method}', EndPoint '{EndPoint}'";
+        //}
     }
 }

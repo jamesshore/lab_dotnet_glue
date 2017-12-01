@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -16,9 +18,10 @@ namespace Auth0Glue
             this.host = host;
         }
 
-        public async Task PostAsync(string endpoint)
+        public async Task PostAsync(string endpoint, Dictionary<string, object> parameters = null)
         {
-            HttpResponseMessage response = await client.PostAsync($"{host}{endpoint}", null);
+            var json = JsonConvert.SerializeObject(parameters);
+            HttpResponseMessage response = await client.PostAsync($"{host}{endpoint}", new StringContent(json));
         }
     }
 }
