@@ -39,7 +39,7 @@ namespace Auth0Glue.Test
         public async Task CallsEndpointUsingPostMethod()
         {
             var endpoint = "/post-path";
-            await newClient().PostAsync(endpoint);
+            await NewClient().PostAsync(endpoint);
 
             var request = await clientRequest;
             Assert.AreEqual("POST", request.Method, "method");
@@ -47,40 +47,56 @@ namespace Auth0Glue.Test
         }
 
         [TestMethod]
-        public async Task ProvidesServerResponse()
+        public async Task SetsHeaders()
         {
-            var expectedStatus = HttpStatusCode.UpgradeRequired;
-            var expectedBody = "expected_body";
-            server.ConfigureResponse(status: expectedStatus, body: expectedBody);
-            
-            var response = await newClient().PostAsync(IrrelevantEndpoint);
-            Assert.AreEqual(expectedStatus, response.Status, "status");
-            Assert.AreEqual(expectedBody, response.Body, "body");
+            var headers = new StringDictionary()
+            {
+                { "header1", "one" },
+                { "header2", "two" },
+
+            };
+            await NewClient().PostAsync(IrrelevantEndpoint, headers: headers);
+
+            TestHarnessRequest request = await clientRequest;
+            Assert.AreEqual("one", request.Headers["header1"]);
+            Assert.AreEqual("two", request.Headers["header2"]);
         }
 
         [TestMethod]
-        public async Task ProvidesEmptyBodyWhenThereAreNoParameters()
-        {
-            await newClient().PostAsync(IrrelevantEndpoint);
-            Assert.AreEqual("", (await clientRequest).Body);
-        }
-
-        [TestMethod]
-        public async Task ConvertsParametersToJsonObject()
+        public async Task SendsParametersAsJsonObjectInBody()
         {
             var parameters = new Dictionary<string, string>()
             {
                 ["parm1"] = "one",
                 ["parm2"] = "two"
             };
-            await newClient().PostAsync(IrrelevantEndpoint, parameters);
+            await NewClient().PostAsync(IrrelevantEndpoint, parameters: parameters);
 
             TestHarnessRequest request = await clientRequest;
             Assert.AreEqual("{\"parm1\":\"one\",\"parm2\":\"two\"}", request.Body, "body");
             Assert.AreEqual("application/json; charset=utf-8", request.Headers["content-type"], "content-type header");
         }
 
-        private RestClient newClient()
+        [TestMethod]
+        public async Task SendsEmptyBodyWhenThereAreNoParameters()
+        {
+            await NewClient().PostAsync(IrrelevantEndpoint);
+            Assert.AreEqual("", (await clientRequest).Body);
+        }
+
+        [TestMethod]
+        public async Task ReturnsServerResponse()
+        {
+            var expectedStatus = HttpStatusCode.UpgradeRequired;
+            var expectedBody = "expected_body";
+            server.ConfigureResponse(status: expectedStatus, body: expectedBody);
+
+            var response = await NewClient().PostAsync(IrrelevantEndpoint);
+            Assert.AreEqual(expectedStatus, response.Status, "status");
+            Assert.AreEqual(expectedBody, response.Body, "body");
+        }
+
+        private RestClient NewClient()
         {
             return new RestClient(TestHarnessServer.Host);
         }
