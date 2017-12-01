@@ -56,7 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Auth0Glue\Auth0Glue.csproj">
-      <Project>{24812ef0-1d15-4dec-8c34-cfb285932dc9}</Project>
+      <Project>{60f1b5f5-59f9-435e-8bc1-22ec80cdcdee}</Project>
       <Name>Auth0Glue</Name>
     </ProjectReference>
   </ItemGroup>

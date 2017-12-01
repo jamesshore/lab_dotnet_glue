@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2010
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth0Glue", "Auth0Glue\Auth0Glue.csproj", "{24812EF0-1D15-4DEC-8C34-CFB285932DC9}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth0Glue.Test", "Auth0Glue.Test\Auth0Glue.Test.csproj", "{4223430C-B918-4D53-AD14-A3E69469372F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E197F217-FF4A-4C47-9A8C-AA39FFE0C6A6}"
@@ -13,20 +11,22 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Auth0Glue", "Auth0Glue\Auth0Glue.csproj", "{60F1B5F5-59F9-435E-8BC1-22EC80CDCDEE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{24812EF0-1D15-4DEC-8C34-CFB285932DC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{24812EF0-1D15-4DEC-8C34-CFB285932DC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{24812EF0-1D15-4DEC-8C34-CFB285932DC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{24812EF0-1D15-4DEC-8C34-CFB285932DC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4223430C-B918-4D53-AD14-A3E69469372F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4223430C-B918-4D53-AD14-A3E69469372F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4223430C-B918-4D53-AD14-A3E69469372F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4223430C-B918-4D53-AD14-A3E69469372F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{60F1B5F5-59F9-435E-8BC1-22EC80CDCDEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{60F1B5F5-59F9-435E-8BC1-22EC80CDCDEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{60F1B5F5-59F9-435E-8BC1-22EC80CDCDEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{60F1B5F5-59F9-435E-8BC1-22EC80CDCDEE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
