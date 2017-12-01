@@ -49,7 +49,7 @@ namespace Auth0Glue.Test
         [TestMethod]
         public async Task SetsHeaders()
         {
-            var headers = new StringDictionary()
+            var headers = new Dictionary<string, string>()
             {
                 { "header1", "one" },
                 { "header2", "two" },
@@ -67,8 +67,8 @@ namespace Auth0Glue.Test
         {
             var parameters = new Dictionary<string, string>()
             {
-                ["parm1"] = "one",
-                ["parm2"] = "two"
+                { "parm1", "one" },
+                { "parm2", "two" }
             };
             await NewClient().PostAsync(IrrelevantEndpoint, parameters: parameters);
 

@@ -22,15 +22,17 @@ namespace Auth0Glue
             this.host = host;
         }
 
-        public async Task<RestResponse> PostAsync(string endpoint, StringDictionary headers = null, Dictionary<string, string> parameters = null)
+        public async Task<RestResponse> PostAsync(string endpoint, Dictionary<string, string> headers = null, Dictionary<string, string> parameters = null)
         {
             var json = parameters == null ? "" : JsonConvert.SerializeObject(parameters);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            headers = headers ?? new StringDictionary();
+
+            headers = headers ?? new Dictionary<string, string>();
             foreach (string name in headers.Keys)
             {
                 content.Headers.Add(name, headers[name]);
             }
+
             var httpResponse = await client.PostAsync($"{host}{endpoint}", content);
             return new RestResponse()
             {
