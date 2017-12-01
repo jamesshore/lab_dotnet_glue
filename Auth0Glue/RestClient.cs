@@ -9,7 +9,7 @@ namespace Auth0Glue
 {
     public class RestClient
     {
-        // per HttpClient documentation, there should be as few instances of HttpClient as possible, so this is shared by all instances of RestClient.
+        // This is static because there should be as few HttpClient instances as possible (per HttpClient documentation).
         private static HttpClient client = new HttpClient();
 
         private string host;
@@ -21,7 +21,7 @@ namespace Auth0Glue
 
         public async Task PostAsync(string endpoint, Dictionary<string, string> parameters = null)
         {
-            var json = JsonConvert.SerializeObject(parameters);
+            var json = parameters == null ? "" : JsonConvert.SerializeObject(parameters);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
             HttpResponseMessage response = await client.PostAsync($"{host}{endpoint}", content);
         }

@@ -36,7 +36,7 @@ namespace Auth0Glue.Test
         }
 
         [TestMethod]
-        public async Task ShouldCallEndpointUsingPostMethod()
+        public async Task CallsEndpointUsingPostMethod()
         {
             RestClient client = new RestClient(TestHarnessServer.Host);
             await client.PostAsync("/post-path");
@@ -44,6 +44,14 @@ namespace Auth0Glue.Test
             TestHarnessRequest request = await clientRequest;
             Assert.AreEqual("POST", request.Method, "method");
             Assert.AreEqual("/post-path", request.EndPoint, "endpoint");
+        }
+
+        [TestMethod]
+        public async Task ProvidesEmptyBodyWhenThereAreNoParameters()
+        {
+            await newClient().PostAsync(IrrelevantEndpoint);
+            var request = await clientRequest;
+            Assert.AreEqual("", request.Body);
         }
 
         [TestMethod]
@@ -94,11 +102,11 @@ namespace Auth0Glue.Test
             HttpListenerContext context = await listener.GetContextAsync();
             HttpListenerRequest request = context.Request;
 
-            string body = null;
-            if (request.InputStream != null)
-            {
-                body = new StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd();
-            }
+            //string body = null;
+            //if (request.InputStream != null)
+            //{
+            var body = new StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd();
+            //}
 
             HttpListenerResponse response = context.Response;
             string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
