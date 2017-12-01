@@ -24,17 +24,19 @@ namespace Auth0Glue
         {
             var json = parameters == null ? "" : JsonConvert.SerializeObject(parameters);
             var content = new StringContent(json, Encoding.UTF8, "application/json");
-            return new RestResponse(await client.PostAsync($"{host}{endpoint}", content));
+            var httpResponse = await client.PostAsync($"{host}{endpoint}", content);
+
+            return new RestResponse()
+            {
+                Status = httpResponse.StatusCode,
+                Body = await httpResponse.Content.ReadAsStringAsync()
+            };
         }
     }
 
     public class RestResponse
     {
-        public readonly HttpStatusCode Status;
-
-        public RestResponse(HttpResponseMessage httpResponse)
-        {
-            Status = httpResponse.StatusCode;
-        }
+        public HttpStatusCode Status;
+        public string Body;
     }
 }

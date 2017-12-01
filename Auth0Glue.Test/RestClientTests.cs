@@ -50,10 +50,12 @@ namespace Auth0Glue.Test
         public async Task ProvidesServerResponse()
         {
             var expectedStatus = HttpStatusCode.UpgradeRequired;
-            server.ConfigureResponse(status: expectedStatus);
+            var expectedBody = "expected_body";
+            server.ConfigureResponse(status: expectedStatus, body: expectedBody);
             
             var response = await newClient().PostAsync(IrrelevantEndpoint);
             Assert.AreEqual(expectedStatus, response.Status, "status");
+            Assert.AreEqual(expectedBody, response.Body, "body");
         }
 
         [TestMethod]
@@ -90,7 +92,8 @@ namespace Auth0Glue.Test
         internal const HttpStatusCode IrrelevantStatus = HttpStatusCode.NotImplemented;
 
         private HttpListener listener = new HttpListener();
-        private HttpStatusCode status;
+        private HttpStatusCode responseStatus;
+        private string responseBody;
         
         internal void Start()
         {
@@ -103,9 +106,10 @@ namespace Auth0Glue.Test
             listener.Stop();
         }
 
-        internal void ConfigureResponse(HttpStatusCode status = IrrelevantStatus)
+        internal void ConfigureResponse(HttpStatusCode status = IrrelevantStatus, string body = "irrelevant_body")
         {
-            this.status = status;
+            responseStatus = status;
+            responseBody = body;
         }
 
         internal async Task<TestHarnessRequest> WaitForRequestAsync()
@@ -117,9 +121,8 @@ namespace Auth0Glue.Test
             var body = new StreamReader(request.InputStream, request.ContentEncoding).ReadToEnd();
 
             HttpListenerResponse response = context.Response;
-            response.StatusCode = (int)status;
-            string responseString = "<HTML><BODY> Hello world!</BODY></HTML>";
-            byte[] buffer = Encoding.UTF8.GetBytes(responseString);
+            response.StatusCode = (int)responseStatus;
+            byte[] buffer = Encoding.UTF8.GetBytes(responseBody);
             response.ContentLength64 = buffer.Length;
             Stream output = response.OutputStream;
             output.Write(buffer, 0, buffer.Length);
