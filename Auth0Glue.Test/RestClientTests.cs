@@ -11,6 +11,7 @@ namespace Auth0Glue.Test
     public class RestClientTests
     {
         private static TestHarnessServer server;
+        private Task<TestHarnessRequest> clientRequest;
 
         [ClassInitialize]
         public static void BeforeAll(TestContext context)
@@ -28,7 +29,7 @@ namespace Auth0Glue.Test
         [TestInitialize]
         public void BeforeEach()
         {
-            server.EnableRequest();
+            clientRequest = server.WaitForRequestAsync();
         }
 
         [TestMethod]
@@ -42,7 +43,7 @@ namespace Auth0Glue.Test
                     Method = "GET",
                     EndPoint = "/post-path"
                 },
-                await server.GetLastRequestAsync()
+                await clientRequest
             );
         }
 
@@ -57,7 +58,6 @@ namespace Auth0Glue.Test
         internal const string Host = "http://localhost:8080";
 
         private HttpListener listener = new HttpListener();
-        private Task<TestHarnessRequest> requestTask;
 
         internal void Start()
         {
@@ -68,16 +68,6 @@ namespace Auth0Glue.Test
         internal void Stop()
         {
             listener.Stop();
-        }
-
-        internal void EnableRequest()
-        {
-            requestTask = WaitForRequestAsync();
-        }
-
-        public Task<TestHarnessRequest> GetLastRequestAsync()
-        {
-            return requestTask;
         }
 
         internal async Task<TestHarnessRequest> WaitForRequestAsync()
