@@ -40,7 +40,7 @@ namespace Auth0Glue.Test
             Assert.AreEqual(
                 new TestHarnessRequest()
                 {
-                    Method = "GET",
+                    Method = "POST",
                     EndPoint = "/post-path"
                 },
                 await clientRequest

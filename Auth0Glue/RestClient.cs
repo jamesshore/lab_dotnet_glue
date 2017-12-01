@@ -18,8 +18,7 @@ namespace Auth0Glue
 
         public async Task PostAsync(string endpoint)
         {
-            Console.WriteLine($"URL: '{host}{endpoint}'");
-            string responseBody = await client.GetStringAsync($"{host}{endpoint}");
+            HttpResponseMessage response = await client.PostAsync($"{host}{endpoint}", null);
         }
     }
 }
