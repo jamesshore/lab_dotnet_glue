@@ -6,9 +6,9 @@ namespace Auth0Glue.Test
 {
     public class MassPasswordReset
     {
-        public static async Task runAsync(List<string> list1, List<string> list2, IAuth0Client auth0Client)
+        public static async Task runAsync(string jsonList1, string jsonList2, IAuth0Client auth0Client)
         {
-            var emails = EmailCollator.Collate(list1, list2);
+            var emails = EmailCollator.CollateFromJson(jsonList1, jsonList2);
             foreach (var email in emails)
             {
                 await auth0Client.SendPasswordResetEmail(email);

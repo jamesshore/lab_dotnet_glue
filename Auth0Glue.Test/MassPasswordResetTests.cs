@@ -12,15 +12,8 @@ namespace Auth0Glue.Test
         [TestMethod]
         public async Task SendsPasswordResetEmailsToCollatedListsOfPeople()
         {
-            var list1 = new List<string>()
-            {
-                "email1",
-                "email2"
-            };
-            var list2 = new List<string>()
-            {
-                "email1",
-            };
+            var list1 = "[ \"email1\", \"email2\" ]";
+            var list2 = "[ \"email1\" ]";
 
             var auth0Mock = Mock.Create<IAuth0Client>();
             Mock.Arrange(() => auth0Mock.SendPasswordResetEmail("email1")).Returns(Task.CompletedTask).OccursOnce();
