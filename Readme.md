@@ -23,7 +23,7 @@ This repository contains an example of a simple back-end glue layer in C# and .N
 	1. Entry point  +
 	                 \
 	                  3. Auth0 Client --> 4. Rest Client
-  ```
+	```
 
   In a larger, more complicated application, additional logic would be attached to the `2` logic branch above, allowing it all to be tested without the use of mocks, and limiting the portion of the code that needed mock-based testing to the entry point and `3` infrastructure branch only.
 
