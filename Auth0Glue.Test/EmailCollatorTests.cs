@@ -29,7 +29,7 @@ namespace Auth0Glue.Test
                 "emailB"
             };
 
-            AssertSetsEqual(expected, EmailCollator.collate(list1, list2));
+            AssertSetsEqual(expected, EmailCollator.Collate(list1, list2));
         }
 
         [TestMethod]
@@ -50,7 +50,7 @@ namespace Auth0Glue.Test
                 "email1"
             };
 
-            AssertSetsEqual(expected, EmailCollator.collate(list1, list2));
+            AssertSetsEqual(expected, EmailCollator.Collate(list1, list2));
         }
 
         [TestMethod]
@@ -70,7 +70,7 @@ namespace Auth0Glue.Test
                 "email1"
             };
 
-            AssertSetsEqual(expected, EmailCollator.collate(list1, list2));
+            AssertSetsEqual(expected, EmailCollator.Collate(list1, list2));
         }
 
         private void AssertSetsEqual(ISet<string> expected, ISet<string> actual)

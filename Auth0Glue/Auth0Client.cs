@@ -5,7 +5,12 @@ using System.Threading.Tasks;
 
 namespace Auth0Glue
 {
-    public class Auth0Client
+    public interface IAuth0Client
+    {
+        Task SendPasswordResetEmail(string emailAddress);
+    }
+
+    public class Auth0Client : IAuth0Client
     {
         private string _domain;
         private string _id;
@@ -22,7 +27,7 @@ namespace Auth0Glue
             _restClient = restClient ?? new RestClient(_domain);
         }
 
-        public async Task SendPasswordResetEmail(string email_address)
+        public async Task SendPasswordResetEmail(string emailAddress)
         {
             var headers = new Dictionary<String, String>()
             {
@@ -31,7 +36,7 @@ namespace Auth0Glue
             var parameters = new Dictionary<String, String>()
             {
                 { "client_id", _id },
-                { "email", email_address },
+                { "email", emailAddress },
                 { "connection", _connection }
             };
             var response = await _restClient.PostAsync("/dbconnections/change_password", headers, parameters);
