@@ -25,7 +25,7 @@ This repository contains an example of a simple back-end glue layer in C# and .N
 	                  3. Auth0 Client --> 4. Rest Client
 	```
 
-  In a larger, more complicated application, additional logic would be attached to the `2` logic branch above, allowing it all to be tested without the use of mocks, and limiting the portion of the code that needed mock-based testing to the entry point and `3` infrastructure branch only.
+	In a larger, more complicated application, additional logic would be attached to the `2` logic branch above, allowing it all to be tested without the use of mocks, and limiting the portion of the code that needed mock-based testing to the entry point and `3` infrastructure branch only.
 
 Because of the destructive nature of this code--it actually resets Auth0 passwords--I have only tested the code, not tried it end-to-end. However, it is based on a real-world Node.JS project that ran successfully in 2016.
 
