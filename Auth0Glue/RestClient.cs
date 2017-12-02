@@ -10,16 +10,21 @@ using System.Threading.Tasks;
 
 namespace Auth0Glue
 {
-    public class RestClient
+    public interface IRestClient
+    {
+        Task<RestResponse> PostAsync(string endpoint, Dictionary<string, string> headers = null, Dictionary<string, string> parameters = null);
+    }
+
+    public class RestClient : IRestClient
     {
         // This is static because there should be as few HttpClient instances as possible (per HttpClient documentation).
         private static HttpClient client = new HttpClient();
 
-        private string host;
+        private string _host;
 
         public RestClient(string host)
         {
-            this.host = host;
+            this._host = host;
         }
 
         public async Task<RestResponse> PostAsync(string endpoint, Dictionary<string, string> headers = null, Dictionary<string, string> parameters = null)
@@ -33,7 +38,7 @@ namespace Auth0Glue
                 content.Headers.Add(name, headers[name]);
             }
 
-            var httpResponse = await client.PostAsync($"{host}{endpoint}", content);
+            var httpResponse = await client.PostAsync($"{_host}{endpoint}", content);
             return new RestResponse()
             {
                 Status = httpResponse.StatusCode,

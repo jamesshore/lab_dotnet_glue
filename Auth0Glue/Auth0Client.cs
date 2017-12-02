@@ -1,28 +1,55 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Auth0Glue
 {
     public class Auth0Client
     {
-        private object auth0Domain;
-        private object auth0Id;
-        private object auth0Secret;
-        private object auth0ApiToken;
-        private object auth0Connection;
+        private string _domain;
+        private string _id;
+        private string _apiToken;
+        private string _connection;
+        private IRestClient _restClient;
 
-        public Auth0Client(object auth0Domain, object auth0Id, object auth0Secret, object auth0ApiToken, object auth0Connection)
+        public Auth0Client(string domain, string id, string apiToken, string connection, IRestClient restClient = null)
         {
-            this.auth0Domain = auth0Domain;
-            this.auth0Id = auth0Id;
-            this.auth0Secret = auth0Secret;
-            this.auth0ApiToken = auth0ApiToken;
-            this.auth0Connection = auth0Connection;
+            _domain = domain;
+            _id = id;
+            _apiToken = apiToken;
+            _connection = connection;
+            _restClient = restClient ?? new RestClient(_domain);
         }
 
-        public async Task SendPasswordResetEmail(string email)
+        public async Task SendPasswordResetEmail(string email_address)
         {
-
+            var headers = new Dictionary<String, String>()
+            {
+                { "Authorization", $"Bearer {_apiToken}" }
+            };
+            var parameters = new Dictionary<String, String>()
+            {
+                { "client_id", _id },
+                { "email", email_address },
+                { "connection", _connection }
+            };
+            var response = await _restClient.PostAsync("/dbconnections/change_password", headers, parameters);
+            if (response.Status != HttpStatusCode.OK)
+            {
+                throw new Auth0Exception($"Unexpected status code from Auth0: {(int)response.Status} ({response.Status}). Response body: '{response.Body}'");
+            }
         }
+    }
+
+    [Serializable]
+    public class Auth0Exception : Exception
+    {
+        public Auth0Exception() { }
+        public Auth0Exception(string message) : base(message) { }
+        public Auth0Exception(string message, Exception inner) : base(message, inner) { }
+        protected Auth0Exception(
+          System.Runtime.Serialization.SerializationInfo info,
+          System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }
