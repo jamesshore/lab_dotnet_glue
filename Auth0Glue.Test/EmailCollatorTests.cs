@@ -73,6 +73,20 @@ namespace Auth0Glue.Test
             AssertSetsEqual(expected, EmailCollator.Collate(list1, list2));
         }
 
+        [TestMethod]
+        public void HandlesJsonLists()
+        {
+            var list1 = "[ \"email1\" ]";
+            var list2 = "[ \"email2\" ]";
+            var expected = new HashSet<string>()
+            {
+                "email1",
+                "email2"
+            };
+
+            AssertSetsEqual(expected, EmailCollator.CollateFromJson(list1, list2));
+        }
+
         private void AssertSetsEqual(ISet<string> expected, ISet<string> actual)
         {
             if (!expected.SetEquals(actual))

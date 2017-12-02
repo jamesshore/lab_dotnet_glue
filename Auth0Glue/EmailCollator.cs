@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 
 namespace Auth0Glue
@@ -11,6 +12,14 @@ namespace Auth0Glue
             result.UnionWith(list2);
             result.Remove(null);
             return result;
+        }
+
+        public static ISet<string> CollateFromJson(string list1, string list2)
+        {
+            return EmailCollator.Collate(
+                JsonConvert.DeserializeObject<List<string>>(list1),
+                JsonConvert.DeserializeObject<List<string>>(list2)
+            );
         }
     }
 }
