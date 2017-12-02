@@ -15,7 +15,7 @@ This repository contains an example of a simple back-end glue layer in C# and .N
 	1. Entry point --> 2. Collation Logic --> 3. Auth0 Client --> 4. Rest Client
 	```
 
-	But this project lifts the collation logic to the top level, freeing it from having any infrastructure dependencies. This allows the collation logic to be tested without using mocks:
+	But this project lifts the infrastructure dependencies to the top level, freeing the logic from having any infrastructure dependencies. This allows the collation logic to be tested without using mocks:
 
 	```
 	                  2. Collation Logic
